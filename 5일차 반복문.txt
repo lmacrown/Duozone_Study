@@ -1,0 +1,20 @@
+if와 switch의 차이 : 조건이 아닌 값을 받아서 간략하게 조건문을 표현함
+case 1:   /  case 2:	로 작성시 1또는2에 해당되면 실행됨//(if(num==1 or num==2))
+switch의 경우 case에서 람다식으로 표현 가능
+case의 경우 숫자외에 문자열도 가능// (case "Im groot" :)
+switch는 원래 리턴값이 없으나 int a =switch(num) 을 했을 경우 switch를 실행한 결과가
+해당 변수에 주입됨.
+
+for(초기식; 조건식; 증감식) {실행문장}
+while(조건){실행문장} : 변수선언을 이전에 하고 증감식은 실행문장중에 있음
+for문에서 break를 하면 해당 중괄호만 중지
+Label: for(){ for(){ break Label;}}을 할경우 모든 for문 정지
+continue : 다음 문장을 실행하지 않고 처음으로 돌아감
+!!!스위치-case, for문 조건문을 다 없애야 좋음(다형성 기법으로 없앤다)
+
+
+객체 지향 프로그램의 특징 : 은닉성, 상속성, 다형성
+다형성-자바는 가상함수(인터페이스). 인터페이스 사용시 반드시 구현(implement)
+인댄트 : 탭핑하여 들어가는 부분
+파일 텍스트로 실행하는 법 : 오른쪽 마우스 run as->run configuration->common에서 해당 파일선택
+->input file 체크후 apply-> run

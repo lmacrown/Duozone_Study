@@ -1,0 +1,10 @@
+ServiceImpl의 용도
+=>ServiceImpl : 인터페이스는 그대로 사용할수 없으므로 인터페이스에서 구현했을경우 
+메인에서 사용하기 위해 객체화함
+Vechicle vehicle = new Bus()일때 메서드는 vehicle만 쓸수 있는 것인가=>Bus()메서드를 지정한다고 했는데?
+Bus bus = (Bus) vehicle; //강제 타입 변환
+=> bus의 메소드는 다 쓸수 있음
+=>Vehicle에 Bus의 메서드를 부여했지만 메서드가 없으므로 Bus에서 사용하기 위해 강제 타입변환을 해야함.
+sealed를 쓰면 해당 객체에서는 상속받은 객체 또한 sealde가 되 있는지?
+=>sealed를 상속받았을 때 sealed가 부여돼있음. 다른 자식 객체를 생성하기 위해서는 
+non-sealed를 써야하며 안할경우에도 sealed는 써야됨 
