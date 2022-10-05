@@ -1,0 +1,55 @@
+API 도큐먼트 : 라이브러리를 사용하기 위한 방법, 설명서
+String str =:"Hello"
+str += " World" => 새로운 메모리에 새로운 값으로 할당됨
+StringBuffer : 동기화를 해줌
+StringBuilder : 효율적인 문자열 조작 기능이 필요할 때 사용
+병렬처리 할 경우에 예외 발생 가능. 속도는 빠름. append를 사용. 
+StringTokenizer : 구분자(공백)로 연결된 문자열을 분리할 때 사용
+ex) StringTokenizer token = new StringTokenizer(strNums, " \t"
+모든객체와 배열, 인터페이스의 부모는 Object이다
+기본 메소드를 재정의 할때 source를 이용하면 편리
+데이터를 관리하는 건 일반화된 부모
+해시 : 객체를 식별하는 정수
+해시코드 메소드 역시 객체의 데이터를 기준으로 재정의해서 새로운 정수값을 리턴하도록 하는 것이 일반적
+DTO : 데이터베이스와 연동하여 사용. 데이터 전달을 위한 객체(논리가 없음)
+Record : DTO의 기능을 대신하여 주며 코드를 줄임
+롬복 : JDK에 포함된 표준 라이브러리는 아니지만 자주 쓰는 자동 코드 생성 라이브러리
+관리자 권한 cmd에서 해당 파일로 이동후 java -jar lombok.jar 실행
+@NoArgsConstructor : 인자가 없는 기본 생성자
+@AllArgsConstructor : 인자가 있는 기본 생성자
+@NonNull : null값을 전달하면 에러가 남
+keyCode = System.in.read(); : 키보드 입력값을 직접 받아옴. 잘 안씀
+System.exit() : 프로세스를 강제 종료. 정상종료는 0, 비정상 종료는 1 또는 -1
+부모 프로세스에서 자식 프로세스를 만들 수 있으면 통신 및 상태값(연동해야됨)을 얻을 수 있음
+in : 표준 입력 장치(<<) out : 표준 출력 장치(>) err : 표준 에러 장치
+진행시간읽기 : System.nanoTime/*currentTimeMillis()*/(); => 시작시간과 끝 시간을 빼서 실행시간을 알아냄
+시스템 프로퍼티 : 자바 프로그램이 시작될 때 자동 설정되는 시스템의 속성
+Properties props = System.getProperties();
+Set keys = props.keySet()을 하면 모든 프로퍼티 값 출력
+Arrays.toString() : 문자열로 출력
+String->byte 배열로 갈 때 기본은 UTF-8 인코딩
+UTF-8에서 한글은 3byte, 영문 및 특수문자는 1byte
+EUC-KR에서 한글은 2byte
+String은 내부 문자열을 수정할 수 없다.=>변경할 경우 값을 새로 생성하는 것
+StringBuilder : 하나의 공간만을 사용함. 공간이 부족하면 공간을 2배로 늘림. 오버헤드가 감소함
+반복문에서 if문은 제거할수록 좋음(클락수가 많이 높음)
+메소드 체이닝 : 연이어서 다른 메소드를 호출
+split("&|,") : ()해당하는 값을 기준으로 값을 나눔
+countTokens() : 분리할 수 있는 문자열의 총 수
+박싱 : 기본 타입의 값을 포장 객체로 자동으로 만드는 과정
+int value2 =obj;(언박싱) Integer obj =100;(박싱)
+Date(날짜), Calendar(다양한 날짜와 시간), LocalDateTime(조작)
+SimpleDateFormat(yyyy.MM.dd HH:mm:ss) : 날짜 데이터 형식을 지정해줌
+DateTimeFormatter.ofPattern("yyyy.MM.dd a HH:mm:ss") : LocalDateTime에서 형식을 지정해줌
+DecimalFormat : 숫자를 형식화된 문자열로 변환(소수점 이하 출력, 1000단위마다 "," 출력)
+floor : 소수점을 버림
+SimpleDateFormat : 날짜를 형식화된 문자열로 변환
+자바는 클래스와 인터페이스의 메타정보를 Class 객체로 관리
+리플렉션 : 메타 정보(생성자, 필드, 메소드 정보)를 프로그램에서 읽고 수정하는 행위
+정적 코드 : 정확히 기록되어 값이 바뀌지 않는 코드(컴파일 때 결정되는 코드)
+Class clazz = Car.class; => 클래스에 관한 메타정보만 올라옴(메서드, 변수는 호출되지않음)
+Car obj = new Car(); / Class clazz = Class.forName("ch12.sec11.exam02.Car")=> 
+Car의 모든 메서드와 변수가 호출됨->static 영역이 실행됨
+동적 코드 : 앱을 실행하면서 데이터를 기록해서 사용을 하는 코드
+
+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
