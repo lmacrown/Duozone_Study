@@ -1,0 +1,31 @@
+AOP : 공통의 관심사를 적용해 발생하는 의존관계 복잡성과 코드 중복을 해소해 주는 프로그래밍
+RTTI(리플랙션) : Run time Type Information
+=>오류 발견을 실행 전에 알 수 있음(인공위성)
+정적 코드를 쓰면 안됨=>동적 코드를 써야됨
+Object obj = constructor.newInstance();// 전달되는 매개변수에 따라 바뀌는 동적인 코드=>리플랙션
+Constructor constructor = clazz.getConstructor();// 인자가 없는 기본 생성자를 리턴
+Constructor[] getDeclaredConsturctors() : 생성자 정보 읽기
+
+리소스 경로 얻기 : URL getResource(String name)/InputStream getResourceAsStream(Stirng n)
+String photo1Path = clazz.getResource("photo1.jpg").getPath();=>/C:/workspace/chapter12/bin/ch12/sec11/exam03/photo1.jpg
+String photo2Path = clazz.getResource("images/photo2.jpg").getPath();=>/C:/workspace/chapter12/bin/ch12/sec11/exam03/images/photo2.jpg
+
+어노테이션 : 클래스 또는 인터페이스를 컴파일하거나 실행할 때 어떻게 처리할지를 알려주는 설정 정보
+1. 컴파일 시 사용하는 정보 전달
+2. 빌드 툴이 코드를 자동으로생성할 때 사용하는 정보 전달
+3. 실행 시 특정 기능을 처리할 때 사용하는 정보 전달
+ex. public @interface PrintAnnotation=>사용시 : @PrintAnnotation(value="#", numer=20)
+값의 타입에 대해서 컴파일러가 자동으로 인식하여 변수명을 지정안해주어도 대입해줌
+@Target : 적용 대상을 지정할 때 사용 =>@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME) : 어노테이션을 실행시간까지 유지할 것을 지정
+
+문제풀이
+API도큐먼트 
+클래스의 상속 관계 및 자식 클래스들이 무엇이 있는지 알 수 있다.
+생성자 선언부, 필드의 타입, 메소드의 선언부를 확인할 수 있다
+Java.Base
+모든 표준 모듈이 의존하는 기본 모듈이다
+Java.lang 패키지를 제외한 다른 패키지는 import 문을 피룡로 한다
+Object 
+Object의 equals() 메소드는 == 연산자와 동일하게 번지를 비교한다.
+Object의 hashCode()메소드는 동등 비교 시 활용한다
