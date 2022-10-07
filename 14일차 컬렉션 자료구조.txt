@@ -1,0 +1,31 @@
+Hashtable : HashMap과 동일한 구조이나 멀티 스레드 환경에서 사용
+객체는 인터페이스나 참조변수로 선언
+properties : Hashtable의 자식테이블.키와 값을 String형태로 제한한 컬렉션
+키와 값이 =로 구성된 텍스트 파일. 환경설정 파일
+=>동적 코드. 데이터가 외부에 있으므로 프로그램은 고정되 있으나 결과값은 바뀔 수 있음
+
+TreeSet : 이진 트리를 기반으로 한 Set 컬렉션. set과 다르게 검색에 특화돼 있음
+정렬이 되어서 들어감. 값이 작은것은 왼쪽에 큰것은 오른쪽에 저장
+- descendingSet() : 역순으로 입력
+- tailSet(N, true) : N값 이상인 값을 입력
+- subSet(N,true, M, false) : N과 M 사이의 값을 출력하되 N,M을 포함하는지를 결정할 수 있음
+TreeMap : 키와 값이 저장된 엔트리(key, value)를 저장
+데이터를 메모리에 저장해야 검색을 빠르게 할 수 있음
+!!!!!Comparable : 임의로 만든 클래스에 대해 자신과 객체를 정렬하는 인터페이스(객체에 대해 소유권 유)
+- compareTo(T o) : 주어진 객체와 같으면 0, 작으면 음수, 크면 양수를 리턴
+1) name.compareTo(o.name) : 이름을 순서대로 출력
+2) name.compareToIgnoreCase(o.name) : 대소문자 구분 없이 이름을 순서대로 출력
+2) age == o.age : 나이를 순서대로 출력
+!!!!!Comparator : 임의로 만든 클래스에 대해 들어오는 두 객체 비교(객체에 대해 소유권 무)
+
+스택 : LIFO. push : 삽입, pop : 제거
+큐 : FIFO. offer : 삽입, poll : 제거
+동기화된 컬렉션 : 여러 스레드가 동시에 컬렉션에 접근하면 요소가 변경될 수 있음.
+=> 비동기화된 메소드(ArratList, HashSet,HashMap)를 동기화된 메소드로 래핑하는 메소드를 제공
+수정할 수 없는 컬렉션
+of() : 컬렉션 생성 시 저장된 요소를 변경하고 싶지 않을 때 사용
+copyOf() : 기존 컬렉션을 복사하여 수정할 수 없는 컬렉션을 만듬
+immutableList : 변경이 안됨(final)
+final은 수정은 안되나 제거는 됨
+
+
