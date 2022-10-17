@@ -1,5 +1,4 @@
 package ch19.sec14;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -29,7 +28,7 @@ public class ChatServer {
 	RoomManager roomManager = new RoomManager(clients);
 
 	//메소드: 서버 시작
-	public void start() throws Exception {
+	public void start() throws IOException {
 		
 		memberRepository.loadMember();
 		
@@ -43,9 +42,6 @@ public class ChatServer {
 					SocketClient sc = new SocketClient(this, socket,roomManager);
 				}
 			} catch(IOException e) {
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		});
 		thread.start();
@@ -94,10 +90,39 @@ public class ChatServer {
 	
 	public void sendMessage(SocketClient sender, String message) throws IOException {
 		JSONObject root = new JSONObject();
+		//root.put("clientIp", sender.clientIp);
+		//root.put("chatName", sender.chatName);
 		root.put("message", message);
 		String json = root.toString();
+		/*
+		//귀속말 존재 여부 확인 
+		if (message.indexOf("@") == 0) {
+			int pos = message.indexOf(" ");
+			String key = message.substring(1, pos);
+			message = "(귀속말)" + message.substring(pos+1);
+			
+			SocketClient targetClient = chatRoom.get(key);
+			if (null != targetClient) {
+				targetClient.send(json);	
+			}
+			
+		} else {
+			//체팅방에 있은 모든 사람(본인제외) 
+			chatRoom.values().stream()
+			.filter(socketClient -> socketClient != sender)
+			.forEach(socketClient -> socketClient.send(json));
+		}
+		*/
+		
+		//ChatClient.chatTitle = root.getString("chatTitle");
+		//String chatTitle = sender.room.title;
+//		System.out.println(ChatClient.chatTitle+"에 입력");
+//		FileWriter filewriter = new FileWriter("C:/Temp/"+ChatClient.chatTitle+".db", true);
+//		System.out.println(ChatClient.chatTitle+"접속");
 		String chatTitle = roomManager.loadRoom(sender.chatName).title;
-		FileWriter filewriter = new FileWriter("C:/Temp/"+chatTitle+".db", true);//수정
+		System.out.println(chatTitle+"에 입력");
+		FileWriter filewriter = new FileWriter("C:/Temp/"+chatTitle+".db", true);
+		System.out.println(chatTitle+"접속");
 		filewriter.write(message);
 		filewriter.flush();
 		filewriter.write("\n");
@@ -107,30 +132,16 @@ public class ChatServer {
 	
 		for (SocketClient c : roomManager.loadRoom(sender.chatName).clients) {
             if (!c.equals(sender)) {
-                c.send(json);  
+                c.send(json);
+                
             }
             System.out.println(c);
         }
-		//System.out.println(sender);
+        
+		System.out.println(sender);
+		//sender.send(json);
 	}
 	
-	public void printChatLog(String chatTitle) throws Exception {
-
-		String Data = "C:/Temp/"+chatTitle+".db";
-		File file = new File(Data);
-		Scanner scan = new Scanner(file);		
-		while (scan.hasNextLine())		
-			System.out.println(scan.nextLine());
-	}
-	public void fileListOutput() {
-		String DATA = "C:\\temp";
-		File dir = new File(DATA);
-		// contains() : 파일 이름에 "%"값이 붙은것만 필터링
-		String[] fileNames = dir.list();
-		for (String filename : fileNames) {
-			System.out.println("filename : " + filename);
-		}
-	}
 	//메소드: 서버 종료
 	public void stop() {
 		try {
@@ -150,7 +161,7 @@ public class ChatServer {
 	}
 	
 	//메소드: 메인
-	public static void main(String[] args) throws Exception {	
+	public static void main(String[] args) {	
 		try {
 			ChatServer chatServer = new ChatServer();
 			chatServer.start();

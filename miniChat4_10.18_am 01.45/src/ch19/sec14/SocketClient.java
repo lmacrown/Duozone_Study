@@ -1,17 +1,18 @@
 package ch19.sec14;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Base64;
 
 import org.json.JSONObject;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class SocketClient {
 	//필드
@@ -23,11 +24,10 @@ public class SocketClient {
 	String chatName;
 	Room room;
 	RoomManager roomManager;
-	static String chatTitle;
 	
 	
 	//생성자
-	public SocketClient(ChatServer chatServer, Socket socket,RoomManager roomManager) throws Exception {
+	public SocketClient(ChatServer chatServer, Socket socket,RoomManager roomManager) {
 		try {
 			this.chatServer = chatServer;
 			this.socket = socket;
@@ -42,7 +42,7 @@ public class SocketClient {
 		}
 	}	
 	//메소드: JSON 받기
-	public void receive() throws Exception{
+	public void receive() {
 		chatServer.threadPool.execute(() -> {
 			try {
 				boolean stop = false;
@@ -83,6 +83,8 @@ public class SocketClient {
 						break;
 					case "message":
 						String message = jsonObject.getString("data");
+						
+						//chatServer.sendToAll(this, message);
 						chatServer.sendMessage(this, message);
 						break;
 						
@@ -114,15 +116,10 @@ public class SocketClient {
 					case "chatstart":
 						startChat(jsonObject);
 						break;
-					case "chatlog":
-						printChatLog(jsonObject);
-						break;
-					case "fileList":
-						chatServer.fileListOutput();
-						break;
+
 					}
 				}
-			} catch(Exception e) {
+			} catch(IOException e) {
 				e.printStackTrace();
 				chatServer.sendToAll(this, "나가셨습니다.");
 				chatServer.removeSocketClient(this);
@@ -179,7 +176,9 @@ public class SocketClient {
 		close();
 
 	}
+	
 
+	
 	public void removeRoom(JSONObject jsonObject) {
 
 		int chatNo = Integer.parseInt(jsonObject.getString("chatNo"));
@@ -226,7 +225,7 @@ public class SocketClient {
 
 		int chatNo = Integer.parseInt(jsonObject.getString("chatNo"));
 		this.chatName = jsonObject.getString("data");
-		
+		String chatTitle;
 		JSONObject jsonResult = new JSONObject();
 
 		jsonResult.put("statusCode", "-1");
@@ -239,7 +238,6 @@ public class SocketClient {
 					this.room=room;
 					room.entryRoom(this);
 					jsonResult.put("chatTitle", room.title);
-					chatTitle=room.title;
 					break;
 				}
 
@@ -322,51 +320,7 @@ public class SocketClient {
 		
 		close();
 	}
-
-	public void fileTran(JSONObject jsonObject) throws Exception {
-		JSONObject json = new JSONObject();
-		String fileName = jsonObject.getString("filename");
-		byte[] data =Base64.getDecoder().decode(jsonObject.getString("filetrans").getBytes());
-
-		File filePath = new File("C:\\temp\\server\\"+fileName);
-		if(!filePath.exists()) {
-			filePath.mkdir();
-		}
-		BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream("C:\\temp\\server\\"+fileName));
-		fos.write(data);
-		fos.close();
-		send(json.toString());
-		close();
-	}
-	public void fileReceive(JSONObject jsonObject) throws Exception {
-		JSONObject json = new JSONObject();
-		String fileName = jsonObject.getString("filename");
-		byte[] data =Base64.getEncoder().encode(jsonObject.getString("filetrans").getBytes());
-
-		File filePath = new File("C:\\temp\\"+fileName);
-		if(!filePath.exists()) {
-			filePath.mkdir();
-		}
-		BufferedInputStream ios = new BufferedInputStream(new FileInputStream("C:\\temp\\"+fileName));
-		ios.read(data);
-		ios.close();
-		send(json.toString());
-		close();
-	}
-	public void printChatLog(JSONObject jsonObject) throws Exception {
-		JSONObject json = new JSONObject();
-		String chatRoom = chatTitle;
-		json.put("chatTitle", chatRoom);
-		System.out.println(chatRoom+" 채팅 기록");
-		chatServer.printChatLog(chatRoom);
-		
-	//	FileWriter filewriter = new FileWriter("C:/Temp/"+chatRoom+".db");
-//		String Data = "C:/Temp/"+chatRoom+".db";
-//		File file = new File(Data);
-//		Scanner scan = new Scanner(file);		
-//		while (scan.hasNextLine())		
-//			System.out.println(scan.nextLine());
-	}
+	
 	//메소드: JSON 보내기
 	public void send(String json) {
 		try {

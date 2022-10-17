@@ -48,7 +48,7 @@ public class ChatClientMain {
 	}
 
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 		ChatClient chatClient = new ChatClient();
@@ -122,19 +122,39 @@ public class ChatClientMain {
 				
 				switch(menuNum) {
 				case "1"://채팅 로그 출력"
-					chatClient.printChatLog();
+					try {
+						chatClient.messageOutput();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					break;
 				case "2"://메세지 입력"
 					chatClient.sendMessage(scanner);
 					break;
 				case "3"://파일 전송
-					chatClient.fileTrasfer(scanner);
+					System.out.println("보낼 파일 이름 입력");
+					String fileName= "C:\\temp\\" + scanner.next();
+					File FileName = new File(fileName);
+
+					chatClient.fileTrasfer("localhost", 50001, FileName);/* 포트번호 50001 */
 					break;
 				case "4"://파일 목록 조회
 					chatClient.fileListOutput();
 					break;
 				case "5"://파일 받기
-					chatClient.fileReceive(scanner);
+					System.out.println("파일 다운로드 : ");
+					fileName = "C:\\temp\\" + scanner.next();
+					FileName = new File(fileName);
+
+					if(FileName.exists())
+						chatClient.fileReceive("localhost", 50001, FileName);
+					else
+						System.out.println("파일이 존재하지 않습니다");
+					
+					int pos = fileName.lastIndexOf(".");
+					if(fileName.substring(pos+1).equals("jpg"))
+						chatClient.imageRead();
 					break;
 					
 				case "Q", "q":

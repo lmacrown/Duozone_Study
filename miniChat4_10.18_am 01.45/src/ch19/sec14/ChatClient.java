@@ -3,17 +3,20 @@ package ch19.sec14;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Base64;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
@@ -312,8 +315,13 @@ public class ChatClient {
 	public void messagePrintResponse() throws Exception {
 		String json = dis.readUTF();
 		JSONObject root = new JSONObject(json);
-
+		//String statusCode = root.getString("statusCode");
 		String message = root.getString("message");
+
+//		FileOutputStream fos = new FileOutputStream("C:/Temp/"+chatTitle+".db");//여기서 부터
+//		DataOutputStream dos = new DataOutputStream(fos);
+//		dos.writeUTF(message);
+		
 		
 		System.out.println(message);
 	}
@@ -420,84 +428,111 @@ public class ChatClient {
 		}
 	}
 	// 파일전송
-	public void fileTrasfer(Scanner scan) throws Exception {
-		//파일이름
-		System.out.println("파일 이름을 입력하시오");
-		String transFileName = scan.next();
-		File filename = new File("C:\\temp\\"+transFileName);
-		
-		
-		if (!filename.exists()) {
-			System.out.println("파일 없음");
-			return;
+	public void fileTrasfer(String serverIP, int port, File fileName) {
+			String files = fileName.getName();
+			File file = new File(files);
+			if (!file.exists()) {
+				System.out.println("파일 없음");
+				System.exit(0);
+			}
+			long fileSize = file.length();
+			long totalReadBytes = 0;
+			byte[] buffer = new byte[10000];
+			int readBytes;
+			double startTime = 0;
+			try {
+				FileInputStream fis = new FileInputStream(file);
+				Socket socket = new Socket(serverIP, port);// "localhost", 50001
+				if (!socket.isConnected()) {
+					System.out.println("소켓 연결 오류");
+					System.exit(0);
+				}
+				startTime = System.currentTimeMillis();
+				OutputStream os = socket.getOutputStream();
+				while ((readBytes = fis.read(buffer)) > 0) {
+					os.write(buffer, 0, readBytes);
+					totalReadBytes += readBytes;
+					System.out.println("In progress : " + totalReadBytes + "/" + fileSize + " Byte(s) ("
+							+ (totalReadBytes * 100 / fileSize) + "%)");
+				}
+				System.out.println("파일 변환 완료");
+				fis.close();
+				os.close();
+				socket.close();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			double endTime = System.currentTimeMillis();
+			double diffTime = (endTime - startTime) / 1000;
+			double transferSpeed = (fileSize / 1000) / diffTime;
+
+			System.out.println("time : " + diffTime + "second(s)");
+			System.out.println("Average transfer speed : " + transferSpeed + "KB/s");
 		}
-		
-		byte[] arr = new byte[(int)filename.length()];
-		BufferedInputStream in = new BufferedInputStream(new FileInputStream(filename));
-		in.read(arr);
-		in.close();
-		
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("command", "fileTran");
-		jsonObject.put("filename", filename.getName());
-		jsonObject.put("filetrans", new String(Base64.getEncoder().encode(arr)));
-		
-		String json = jsonObject.toString();
-		connect();
-		send(json);
-		System.out.println("파일 전송 완료");
-	}
 	//파일 받기
-	public void fileReceive(Scanner scan) throws Exception{
-		System.out.println("파일 이름을 입력하시오");
-		String transFileName = scan.next();
-		File filename = new File("C:\\temp\\"+transFileName);
-		
-		
-		if (!filename.exists()) {
-			System.out.println("파일 없음");
-			return;
-		}
-		
-		byte[] arr = new byte[(int)filename.length()];
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(filename));
-		out.write(arr);
-		out.close();
-		
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("command", "fileRe");
-		jsonObject.put("filename", filename.getName());
-		jsonObject.put("filetrans", new String(Base64.getDecoder().decode(arr)));//수정
-		
-		String json = jsonObject.toString();
-		connect();
-		send(json);
-		System.out.println("파일 받기 완료");
+	public void fileReceive(String serverIP, int port, File fileName) {
+			String filename = fileName.getName(); 
+
+			try {
+				ServerSocket server = new ServerSocket(port);
+				System.out.println("포트 할당 중 (Port: " + port+ ")");
+				Socket socket = server.accept();//새로운 연결 소켓 생성 및 accept대기 
+
+				InetSocketAddress isaClient = (InetSocketAddress) socket.getRemoteSocketAddress();
+				System.out.println("A client("+isaClient.getAddress().getHostAddress()+" is connected. (Port: " 
+				+isaClient.getPort() + ")");
+				
+				FileOutputStream fos = new FileOutputStream(filename);
+				InputStream is = socket.getInputStream();
+				
+				double startTime = System.currentTimeMillis();
+				byte[] buffer = new byte[10000];
+				int readBytes;
+				
+				while ((readBytes = is.read(buffer)) != -1) {
+					fos.write(buffer, 0, readBytes);
+				}
+				
+				double endTime = System.currentTimeMillis();
+				double diffTime = (endTime - startTime)/ 1000;;
+				
+				System.out.println("time: " + diffTime+ " second(s)");
+				
+				is.close();
+				fos.close();
+				socket.close();
+				server.close();
+				} catch (IOException e){
+					e.printStackTrace();
+				}
 		}
 	// 파일리스트 출력
-	public void fileListOutput() throws Exception {
-		connect();
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("command","fileList");
-		String json =jsonObject.toString();
-		send(json);
-		disconnect();
-	}
-	// 채팅 로그 출력
-	public void printChatLog() throws IOException {
-		connect();
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("command", "chatlog");
-		//jsonObject.put(chatName, false);
-		String json = jsonObject.toString();
-		send(json);
-		disconnect();
-//		String Data = "C:/Temp/"+chatTitle+".db";
-//		File file = new File(Data);
-//		Scanner scan = new Scanner(file);
-//		while (scan.hasNextLine())
-//			System.out.println(scan.nextLine());
-	}
+	public void fileListOutput() {
+			String DATA = "C:\\temp";
+			File dir = new File(DATA);
+			// contains() : 파일 이름에 "%"값이 붙은것만 필터링
+			String[] fileNames = dir.list();
+			for (String filename : fileNames) {
+				System.out.println("filename : " + filename);
+			}
+
+		}
+	// 파일 로그 출력
+	public void messageOutput() throws IOException {
+			connect();
+			String json = dis.readUTF();
+			JSONObject root = new JSONObject(json);
+			String chatTitle = root.getString("chatTitle");
+			String Data = "C:/Temp/"+chatTitle+".db";
+			File file = new File(Data);
+			Scanner scan = new Scanner(file);
+			while (scan.hasNextLine())
+				System.out.println(scan.nextLine());
+			disconnect();
+		}
 	//이미지 파일 불러오기
 	public void imageRead() {
 			Image image1 = null;
@@ -529,5 +564,10 @@ public class ChatClient {
 			frame.pack();
 			frame.setVisible(true);
 		}
+
+
+
+
+
 
 }
