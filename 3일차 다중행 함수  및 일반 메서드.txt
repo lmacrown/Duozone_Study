@@ -1,0 +1,35 @@
+ROUND : 반올림 반환
+TRUNC : 숫자 버림
+CEIL : 해당되는 숫자보다 큰 숫자 반환
+FLOOR : 해당되는 숫자보다 작은 숫자 반환
+MOD : 나눈 나머지 값 반환
+
+날짜 함수
+SYSDATE : 날짜 함수. 숫자를 연산하면 일수를 계산함
+ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD'; : 날짜 출력형식 변경
+SELECT VALUE FROM NLS_SESSION_PARAMETERS WHERE PARAMETER = 'NLS_DATE_FORMAT'; : 현재 날짜 출력형식 출력
+ADD_MONTHS : 해당 숫자만큼 개월수를 계산함
+MONTHS_BETWEEN : 두 개의 날짜 데이터의 개월 수 차이를 구함
+NEXT_DAY : 입력한 날짜 데이터에서 돌아오는 요일의 날짜 반환
+LAST_DAY : 입력한 날짜 데이터에서 달의 마지막 날짜를 반환
+
+TO_CHAR : 날짜, 숫자 데이터를 문자 데이터로 변환
+TO_NUMBER : 문자 데이터를 숫자 데이터로 변환
+TO_DATE : 문자 데이터를 날짜로 변환
+
+NVL : NULL일 경우 해당 값으로 변경
+NVL2 : 해당 값이 NULL이 아니면 처음 값, NULL이면 두번쨰 값을 적용해서 출력
+DECODE : 기준이 되는 데이터를 먼저 지정한 후 해당 데이터 값에 따라 다른 결과 값을 출력
+CASE : 특정 조건에 따라 반환할 데이터를 설정
+
+다중행 함수 : 여러 값이 들어가서 값이 하나만 나오는 함수
+단일행 함수 : 한 값이 들어가서 값이 하나만 나오는 함수
+SUM(DISTINCT *) : 해당되는 데이터에 중복값을 제외하고 더함
+COUNT(sal) :  null값을 제외함
+GROUP BY : 특정 열 값별로 묶어서 출력
+- HAVING : 지정한 조건에 대해서만 조건출력. WHERE 조건절이 먼저 실행됨
+- ROLLUP : 데이터 그룹화의 합계 출력.(a,b,c),(a,b),(a), 전체 데이터에 대한 결과 출력
+- CUBE : 데이터 그룹화의 합계 출력(a,b,c),(a,b),(b,c),(a,c),(a),(b),(c),전체데이터에 대한 결과 출력
+- GROUPING SETS : 그룹화 열이 여러 개일 때 각 열별 그룹화를 통해 결과 값을 출력
+- GROUPING : 그룹화된 상태로 결과가 집계 되는지 확인
+- LISTAGG : 그룹에 속해있는 데이터를 가로로 나열할 떄 사용
